@@ -17,7 +17,21 @@
                 $this->error = 1;
             }
         }
+        /*
+         *  Obtiene los clientes activos
+         */
+        public function obtenerClientesActivos(){
+            try{
+                $consulta = ' SELECT *         '.
+                            ' FROM cliente     '.
+                            ' WHERE activo = 1 ';
 
+            }
+            catch(Exception $e ) {
+			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
+                $this->error = 1;
+            }
+        }
         /*
          *  Obtiene las campanias de mails activas y con fecha de fin de campania superior a la actual
          *  para un cliente determinado
