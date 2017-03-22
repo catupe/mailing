@@ -50,4 +50,30 @@
                 $this->error = 1;
             }
         }
+
+        /**
+        *   Recorro las campanias que esten activas y que las fechas sean adecuadas (?)
+        *   para cada campania anterior, obtengo el mail asociado a la campania (tabla mailing),
+        *   luego obtengo cada item_campania asociado a la campania ACTIVO y el destinatario asociado al item_campania
+        *   y envio el mail correspondiente. Hay que generar un link asociado a la campania y el destiantario para
+        *   incluir en el mail y permitir al usuario darse de baja de una campania
+        */
+        public function envioCampanias(){
+            try{
+
+                $campanias = $this->obtenerCampaniasActivas();
+
+                foreach( $campanias as $idcampania => $campania ){
+
+                    $mail = $this->obtenerMailCamania($idcampania); // TODO: obtenerMailCamania()
+                    $destinatarios = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
+                    $resMail = $this->mail->enviarMail( $destinatrio, $mail ); // TODO: clase Mail->enviarMail()
+
+                }
+            }
+            catch(Exception $e ) {
+			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
+                $this->error = 1;
+            }
+        }
     }
