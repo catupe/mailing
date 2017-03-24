@@ -1,5 +1,6 @@
 <?php
     namespace lib;
+    use \lib\Mensajes;
 
     class Mail{
         public function enviarMail( $to         = "",
@@ -22,9 +23,9 @@
             //$mensaje = file_get_contents ( $body );
 
             if(mail($to , $subject , $body , $header )){
-                return array("error" => 0);
+                throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '000', array() ), 1);
             }
 
-            return array("error" => 1);
+            return array("error" => 0);
         }
     }

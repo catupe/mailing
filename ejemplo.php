@@ -8,7 +8,8 @@
 
     $handler = new HandlerMailing($ruta_cfg, $ambiente);
 
-    $res = $handler->obtenerCampaniasActivas( 1 );
+    $mail = $handler->obtenerMailCampania(1); // TODO: obtenerMailCamania()
+    $res  = $handler->cargarMail( $mail );
 
     echo "<pre>";
     var_dump($res);

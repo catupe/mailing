@@ -31,8 +31,8 @@
 
             }
             catch(Exception $e ) {
-			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
-                $this->error = 1;
+			   $this->error = 1;
+               throw $e;
             }
         }
         /*
@@ -41,6 +41,11 @@
          */
         public function obtenerCampaniasActivas( $cliente = "" ){
             try{
+
+                //// chequeo de parametros
+                if( strcmp($cliente, "") == 0 ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('cliente') ), 1);
+                }
                 // obtengo las campanias para un cliente determinado
                 $consulta = ' SELECT *                              '.
                             ' FROM campania                         '.
@@ -57,14 +62,16 @@
                 return $salida;
             }
             catch(Exception $e ) {
-			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
-                $this->error = 1;
+			    $this->error = 1;
+                throw $e;
             }
         }
         public function obtenerMailCampania( $idcampania = null ){
             try{
-                if(!isset($idcampania)){
-                    throw new Exception("HandlerMailing::Error Processing Request", 1);
+
+                //// chequeo de parametros
+                if(!isset($idcampania) or empty($idcampania)){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('idcampania') ), 1);
                 }
                 $consulta = '   SELECT *                                '.
                             '   FROM mailing m, campania c, cliente cl  '.
@@ -76,14 +83,16 @@
                 return $row[0];
             }
             catch(Exception $e ) {
-			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
-                $this->error = 1;
+			    $this->error = 1;
+                throw $e;
             }
         }
         public function obtenerDestinatariosCampania( $idcampania = null ){
             try{
-                if(!isset($idcampania)){
-                    throw new Exception("HandlerMailing::Error Processing Request", 1);
+
+                //// chequeo de parametros
+                if(!isset($idcampania) or empty($idcampania)){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('idcampania') ), 1);
                 }
                 $consulta = ' SELECT d.*                            '.
                             ' FROM destinatario d, item_campania ic '.
@@ -98,22 +107,42 @@
                 return $salida;
             }
             catch(Exception $e ) {
-			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
-                $this->error = 1;
+			    $this->error = 1;
+                throw $e;
             }
         }
-        private function cargarMail( $mail = array(), $tags = array() ){
+        //private function cargarMail( $mail = array(), $tags = array() ){
+        public function cargarMail( $mail = array(), $tags = array() ){
             try{
+
+                //// chequeo de parametros
+                if( !isset($mail) or empty($mail) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('mail') ), 1);
+                }
+
                 // TODO: reemlazar tags
-                $body = file_get_contents ( $mail->cuerpo; );
+                $path = $this->configuracion->getDato('mailing.path');
+                $path2mail = $path . DIRECTORY_SEPARATOR . $mail->cuerpo;
+                $body = file_get_contents ( $path2mail );
+
+                return $body;
             }
             catch(Exception $e ) {
-                //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
                 $this->error = 1;
+                throw $e;
             }
         }
-        public function enviarMails( $destinatrio, $mail ){
+        public function enviarMails( $destinatrio = null, $mail = null ){
             try{
+
+                //// chequeo de parametros
+                if( !isset($destinatario) or empty($destinatario) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('destinatrio') ), 1);
+                }
+                if( !isset($mail) or empty($mail) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('mail') ), 1);
+                }
+
                 $body = $this->cargarMail( $mail, array() );
                 foreach ($destinatario as $key => $value) {
                     // mail->enviarMail($to, $body, $subject, $from, $replyto, $cc, $bcc)
@@ -121,11 +150,13 @@
                 }
             }
             catch(Exception $e ) {
-                //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
                 $this->error = 1;
+                throw $e;
             }
         }
         /**
+        *   Envia las los mails a los destinatarios de las campanias activas
+        *
         *   Recorro las campanias que esten activas y que las fechas sean adecuadas (?)
         *   para cada campania anterior, obtengo el mail asociado a la campania (tabla mailing),
         *   luego obtengo cada item_campania asociado a la campania ACTIVO y el destinatario asociado al item_campania
@@ -144,10 +175,12 @@
                     $resMail = $this->enviarMails( $destinatrio, $mail ); // TODO: clase Mail->enviarMail()
 
                 }
+
+                return array( 'error' => 0 );
             }
             catch(Exception $e ) {
-			    //Logs::error_log($e->getMessage(), __METHOD__ . "::" .__LINE__);
-                $this->error = 1;
+			    $this->error = 1;
+                throw $e;
             }
         }
     }
