@@ -2,6 +2,10 @@
 
     class Mail{
 
+        public function __construct(){
+            
+        }
+
         public function enviar( $to         = "",
                                 $body       = "",
                                 $subject    = "",
