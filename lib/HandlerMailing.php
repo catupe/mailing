@@ -79,7 +79,7 @@
                             '    	  c.id_cliente = cl.id AND          '.
                             '         c.id = ?                          ';
 
-                $row = $this->basedatos->ExecuteQuery($consulta, array( $idcampania ));
+                $row      = $this->basedatos->ExecuteQuery($consulta, array( $idcampania ));
                 return $row[0];
             }
             catch(Exception $e ) {
@@ -100,7 +100,7 @@
                             '       ic.id_campania = ?              ';
 
                 $rows	  = $this->basedatos->ExecuteQuery($consulta, array( $idcampania ));
-                $salida = array();
+                $salida   = array();
                 foreach ( $rows as $k => $v){
                     $salida[$v->id] = $v;
                 }
@@ -121,9 +121,9 @@
                 }
 
                 // TODO: reemlazar tags
-                $path = $this->configuracion->getDato('mailing.path');
-                $path2mail = $path . DIRECTORY_SEPARATOR . $mail->cuerpo;
-                $body = file_get_contents ( $path2mail );
+                $path       = $this->configuracion->getDato('mailing.path');
+                $path2mail  = $path . DIRECTORY_SEPARATOR . $mail->cuerpo;
+                $body       = file_get_contents ( $path2mail );
 
                 return $body;
             }
@@ -170,9 +170,9 @@
 
                 foreach( $campanias as $idcampania => $campania ){
 
-                    $mail = $this->obtenerMailCampania($idcampania); // TODO: obtenerMailCamania()
-                    $destinatarios = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
-                    $resMail = $this->enviarMails( $destinatrio, $mail ); // TODO: clase Mail->enviarMail()
+                    $mail           = $this->obtenerMailCampania($idcampania); // TODO: obtenerMailCamania()
+                    $destinatarios  = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
+                    $resMail        = $this->enviarMails( $destinatrio, $mail ); // TODO: clase Mail->enviarMail()
 
                 }
 
