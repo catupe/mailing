@@ -1,6 +1,8 @@
 <?php
     namespace lib;
 
+    use \Exception;
+
     class HandlerMailing{
         private $ruta_configuracion = null;
         private $ambiente           = null;
@@ -132,7 +134,7 @@
                 throw $e;
             }
         }
-        public function enviarMails( $destinatrio = null, $mail = null ){
+        public function enviarMails( $destinatario = null, $mail = null ){
             try{
 
                 //// chequeo de parametros
@@ -146,8 +148,9 @@
                 $body = $this->cargarMail( $mail, array() );
                 foreach ($destinatario as $key => $value) {
                     // mail->enviarMail($to, $body, $subject, $from, $replyto, $cc, $bcc)
-                    $this->mail->enviarMail($value->email, $body, $mail->asunto, $mail->from, $mail->replyto, $mail->cc, $mail->bcc);
+                    $this->mail->enviarMail($value->email, $body, $mail->asunto, $mail->remitente, $mail->responder, $mail->copia, $mail->copiaoculta);
                 }
+
             }
             catch(Exception $e ) {
                 $this->error = 1;
@@ -162,18 +165,22 @@
         *   luego obtengo cada item_campania asociado a la campania ACTIVO y el destinatario asociado al item_campania
         *   y envio el mail correspondiente. Hay que generar un link asociado a la campania y el destiantario para
         *   incluir en el mail y permitir al usuario darse de baja de una campania
+        *
         */
-        public function envioCampanias(){
+        public function envioCampanias( $idCliente = null ){
             try{
 
-                $campanias = $this->obtenerCampaniasActivas();
+                if( !isset($idCliente) or empty($idCliente) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('idcliente') ), 1);
+                }
 
+                $campanias = $this->obtenerCampaniasActivas($idCliente);
                 foreach( $campanias as $idcampania => $campania ){
 
                     $mail           = $this->obtenerMailCampania($idcampania); // TODO: obtenerMailCamania()
                     $destinatarios  = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
-                    $resMail        = $this->enviarMails( $destinatrio, $mail ); // TODO: clase Mail->enviarMail()
-
+                    $resMail        = $this->enviarMails( $destinatarios, $mail ); // TODO: clase Mail->enviarMail()
+                
                 }
 
                 return array( 'error' => 0 );

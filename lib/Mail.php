@@ -1,6 +1,8 @@
 <?php
     namespace lib;
+    
     use \lib\Mensajes;
+    use \Exception;
 
     class Mail{
         public function enviarMail( $to         = "",
@@ -22,10 +24,18 @@
 
             //$mensaje = file_get_contents ( $body );
 
+            error_log("----------------------------------------");
+            error_log("voy a mandar mail con la siguiente info");
+            error_log("to:      " . $to);
+            error_log("subject: " . $subject);
+            error_log("body:    " . $body);
+            //error_log("body: " . $header);
+            error_log("----------------------------------------");
+            /*
             if(mail($to , $subject , $body , $header )){
                 throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '000', array() ), 1);
             }
-
+            */
             return array("error" => 0);
         }
     }

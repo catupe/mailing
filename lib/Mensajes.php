@@ -19,7 +19,7 @@ namespace lib;
  * @version 1.0
  *
  */
-class Mensajes extends MensajesNucleo {
+class Mensajes {
 
 	/**
 	 * Constante que define el estado 'CONFIRMADO' de una transferencia
