@@ -68,6 +68,37 @@
                 throw $e;
             }
         }
+        /*
+         *  Obtiene la campania de mails activas con id definido para un cliente determinado
+         */
+        public function obtenerCampania( $cliente = "", $idCampania = "" ){
+            try{
+
+                //// chequeo de parametros
+                if( strcmp($cliente, "") == 0 ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('cliente') ), 1);
+                }
+                // obtengo las campanias para un cliente determinado
+                $consulta = ' SELECT *                              '.
+                            ' FROM campania                         '.
+                            ' WHERE activa = 1 AND                  '.
+                            '       fecha_fin_campania >= NOW() AND '.
+                            '       id_cliente = ? AND              '.
+                            '       id = ?                          ';
+
+                $rows	  = $this->basedatos->ExecuteQuery($consulta, array( $cliente, $idCampania ));
+
+                $salida = array();
+                foreach ( $rows as $k => $v){
+                    $salida[$v->id] = $v;
+                }
+                return $salida;
+            }
+            catch(Exception $e ) {
+			    $this->error = 1;
+                throw $e;
+            }
+        }
         public function obtenerMailCampania( $idcampania = null ){
             try{
 
@@ -147,6 +178,7 @@
 
                 $body = $this->cargarMail( $mail, array() );
                 foreach ($destinatario as $key => $value) {
+                    
                     // mail->enviarMail($to, $body, $subject, $from, $replyto, $cc, $bcc)
                     $this->mail->enviarMail($value->email, $body, $mail->asunto, $mail->remitente, $mail->responder, $mail->copia, $mail->copiaoculta);
                 }
@@ -175,12 +207,62 @@
                 }
 
                 $campanias = $this->obtenerCampaniasActivas($idCliente);
+                //$campanias = $this->obtenerCampania($idCliente);
                 foreach( $campanias as $idcampania => $campania ){
 
                     $mail           = $this->obtenerMailCampania($idcampania); // TODO: obtenerMailCamania()
                     $destinatarios  = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
                     $resMail        = $this->enviarMails( $destinatarios, $mail ); // TODO: clase Mail->enviarMail()
-                
+
+                }
+
+                return array( 'error' => 0 );
+            }
+            catch(Exception $e ) {
+			    $this->error = 1;
+                throw $e;
+            }
+        }
+        /**
+        *   Envia las los mails a los destinatarios de las campanias activas
+        *
+        *   Recorro las campanias que esten activas y que las fechas sean adecuadas (?)
+        *   para cada campania anterior, obtengo el mail asociado a la campania (tabla mailing),
+        *   luego obtengo cada item_campania asociado a la campania ACTIVO y el destinatario asociado al item_campania
+        *   y envio el mail correspondiente. Hay que generar un link asociado a la campania y el destiantario para
+        *   incluir en el mail y permitir al usuario darse de baja de una campania
+        *
+        */
+        public function envioCampania( $idCliente = null, $idCamania = null ){
+            try{
+
+                if( !isset($idCliente) or empty($idCliente) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('idcliente') ), 1);
+                }
+                if( !isset($idCamania) or empty($idCamania) ){
+                    throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '001', array('idCamania') ), 1);
+                }
+                //$campanias = $this->obtenerCampaniasActivas($idCliente);
+                $campanias = $this->obtenerCampania($idCliente, $idCamania);
+                echo "<br>--------campanias<br>";
+                var_dump ($campanias);
+                echo "<br>--------<br>";
+                foreach( $campanias as $idcampania => $campania ){
+
+                    $mail           = $this->obtenerMailCampania($idcampania); // TODO: obtenerMailCamania()
+                    echo "<br>--------mail<br>";
+                    var_dump ($mail);
+                    echo "<br>--------<br>";
+                    $destinatarios  = $this->obtenerDestinatariosCampania( $idcampania ); // TODO: obtenerDestinatariosCampania()
+                    echo "<br>--------destinatarios<br>";
+                    var_dump ($destinatarios);
+                    echo "<br>--------<br>";
+                    $resMail        = $this->enviarMails( $destinatarios, $mail ); // TODO: clase Mail->enviarMail()
+                    echo "<br>--------resMail<br>";
+                    var_dump ($resMail);
+                    echo "<br>--------<br>";
+
+
                 }
 
                 return array( 'error' => 0 );

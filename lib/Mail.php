@@ -1,6 +1,6 @@
 <?php
     namespace lib;
-    
+
     use \lib\Mensajes;
     use \Exception;
 
@@ -24,13 +24,13 @@
 
             //$mensaje = file_get_contents ( $body );
 
-            error_log("----------------------------------------");
-            error_log("voy a mandar mail con la siguiente info");
-            error_log("to:      " . $to);
-            error_log("subject: " . $subject);
-            error_log("body:    " . $body);
+            echo("----------------------------------------<br>");
+            echo("voy a mandar mail con la siguiente info<br>");
+            echo("to:      " . $to . "<br>");
+            echo("subject: " . $subject . "<br>");
+            //echo("body:    " . $body . "<br>");
             //error_log("body: " . $header);
-            error_log("----------------------------------------");
+            echo("----------------------------------------" . "<br>");
             /*
             if(mail($to , $subject , $body , $header )){
                 throw new Exception(__CLASS__ . "::" . __METHOD__ . " - line " . __LINE__ . " - :: " . Mensajes::getMensaje( '000', array() ), 1);
